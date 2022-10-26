@@ -1,6 +1,140 @@
+import main.*
 
-test "testX" {
+describe "Punto1"{
+	const pancho = new Arquero(rango = 110, agilidad = 20, cantidadDeCopas = 50)
+	const ivana = new Ballestero(rango = 4, agilidad = 10, cantidadDeCopas = 50)
+	const pablo = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 50)
+	const julio = new Guerrero(fuerza = 40, tienenEstrategia = false, cantidadDeCopas = 50)
+	
+	test "pancho puede superar la mision individual"{
+		const misionIndividual1 = new MisionIndividual(personaje = pancho, copasEnJuego = 200, dificultadDeLaMision = 100)
+		assert.that(misionIndividual1.esSuperable())
+	}
+	
+	test "ivana no puede superar la mision individual"{
+		const misionIndividual1 = new MisionIndividual(personaje = ivana, copasEnJuego = 200, dificultadDeLaMision = 1000)
+		assert.notThat(misionIndividual1.esSuperable())
+	}
+	
+	test "pablo puede superar la mision individual"{
+		const misionIndividual1 = new MisionIndividual(personaje = pablo, copasEnJuego = 200, dificultadDeLaMision = 100)
+		assert.that(misionIndividual1.esSuperable())
+	}
+	
+	test "julio no puede superar la mision individual"{
+		const misionIndividual1 = new MisionIndividual(personaje = julio, copasEnJuego = 200, dificultadDeLaMision = 100)
+		assert.notThat(misionIndividual1.esSuperable())
+	}
+	
+		
+	test "puede ser superada la mision grupal"{
+		const equipo = [pancho, pablo]
+		const misionGrupal = new MisionEnEquipo(personajes = equipo, copasEnJuego = 200)
+		assert.that(misionGrupal.esSuperable())
+	}
+	
+	test "no puede ser superada la mision grupal"{
+		const equipo = [ivana, julio]
+		const misionGrupal = new MisionEnEquipo(personajes = equipo, copasEnJuego = 200)
+		assert.notThat(misionGrupal.esSuperable())
+	}
+}
 
-	assert.that(true)
+describe "Punto2"{
+	
+	test "suman 10 copas"{
+		const pancho = new Arquero(rango = 110, agilidad = 20, cantidadDeCopas = 20)
+		const ivana = new Ballestero(rango = 4, agilidad = 10, cantidadDeCopas = 20)
+		const pablo = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const julio = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const tacho = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const equipo = [pancho, ivana, pablo, julio, tacho]
+		const misionGrupal = new MisionEnEquipo(personajes = equipo, copasEnJuego = 200)
+		misionGrupal.iniciarMision()
+		assert.equals(30,pancho.cantidadDeCopas())
+		assert.equals(30,ivana.cantidadDeCopas())
+		assert.equals(30,pablo.cantidadDeCopas())
+		assert.equals(30,julio.cantidadDeCopas())
+		assert.equals(30,tacho.cantidadDeCopas())
+	}
+	
+	test "restan 10 copas"{
+			const pancho = new Arquero(rango = 4, agilidad = 20, cantidadDeCopas = 20)
+		const ivana = new Ballestero(rango = 4, agilidad = 10, cantidadDeCopas = 20)
+		const pablo = new Guerrero(fuerza = 40, tienenEstrategia = false, cantidadDeCopas = 20)
+		const julio = new Guerrero(fuerza = 40, tienenEstrategia = false, cantidadDeCopas = 20)
+		const tacho = new Guerrero(fuerza = 40, tienenEstrategia = false, cantidadDeCopas = 20)
+		const equipo = [pancho, ivana, pablo, julio, tacho]
+		const misionGrupal = new MisionEnEquipo(personajes = equipo, copasEnJuego = 200)
+		misionGrupal.iniciarMision()
+		assert.equals(10,pancho.cantidadDeCopas())
+		assert.equals(10,ivana.cantidadDeCopas())
+		assert.equals(10,pablo.cantidadDeCopas())
+		assert.equals(10,julio.cantidadDeCopas())
+		assert.equals(10,tacho.cantidadDeCopas())
+	}
+	
+	test "tira Exception"{
+		const pancho = new Arquero(rango = 110, agilidad = 20, cantidadDeCopas = 10)
+		const ivana = new Ballestero(rango = 4, agilidad = 10, cantidadDeCopas = 10)
+		const pablo = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 10)
+		const julio = new Guerrero(fuerza = 40, tienenEstrategia = false, cantidadDeCopas = 10)
+		const tacho = new Guerrero(fuerza = 40, tienenEstrategia = false, cantidadDeCopas = 10)
+		const equipo = [pancho, ivana, pablo, julio, tacho]
+		const misionGrupal = new MisionEnEquipo(personajes = equipo, copasEnJuego = 200)
+		assert.throwsException({misionGrupal.iniciarMision()})
+	}
+}
 
+describe "Punto3"{
+	
+	
+	test "pancho gana el bonus"{
+		const pancho = new Arquero(rango = 110, agilidad = 20, cantidadDeCopas = 50)
+		const misionIndividual = new MisionIndividualBonus(personaje = pancho, copasEnJuego = 200, dificultadDeLaMision = 100)
+		misionIndividual.iniciarMision()
+		assert.that(misionIndividual.esSuperable())
+		assert.equals(251,pancho.cantidadDeCopas())
+	}
+	
+	test "pancho gana el boost"{
+		const pancho = new Arquero(rango = 110, agilidad = 20, cantidadDeCopas = 50)
+		const misionIndividual = new MisionIndividualBoost(personaje = pancho, copasEnJuego = 200, dificultadDeLaMision = 100, multiplicadorDeCopas = 2)
+		misionIndividual.iniciarMision()
+		assert.that(misionIndividual.esSuperable())
+		assert.equals(450,pancho.cantidadDeCopas())
+	}
+	
+	test "equipo gana el bonus"{
+		const pancho = new Arquero(rango = 110, agilidad = 20, cantidadDeCopas = 20)
+		const ivana = new Ballestero(rango = 4, agilidad = 10, cantidadDeCopas = 20)
+		const pablo = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const julio = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const tacho = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const equipo = [pancho, ivana, pablo, julio, tacho]
+		const misionGrupal = new MisionEnEquipoBonus(personajes = equipo, copasEnJuego = 200)
+		misionGrupal.iniciarMision()
+		assert.equals(31,pancho.cantidadDeCopas())
+		assert.equals(31,ivana.cantidadDeCopas())
+		assert.equals(31,pablo.cantidadDeCopas())
+		assert.equals(31,julio.cantidadDeCopas())
+		assert.equals(31,tacho.cantidadDeCopas())
+	}
+	
+	test "equipo gana el boost"{
+		const pancho = new Arquero(rango = 110, agilidad = 20, cantidadDeCopas = 20)
+		const ivana = new Ballestero(rango = 4, agilidad = 10, cantidadDeCopas = 20)
+		const pablo = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const julio = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const tacho = new Guerrero(fuerza = 40, tienenEstrategia = true, cantidadDeCopas = 20)
+		const equipo = [pancho, ivana, pablo, julio, tacho]
+		const misionGrupal = new MisionEnEquipoBoost(personajes = equipo, copasEnJuego = 200, multiplicadorDeCopas = 2)
+		misionGrupal.iniciarMision()
+		assert.equals(40,pancho.cantidadDeCopas())
+		assert.equals(40,ivana.cantidadDeCopas())
+		assert.equals(40,pablo.cantidadDeCopas())
+		assert.equals(40,julio.cantidadDeCopas())
+		assert.equals(40,tacho.cantidadDeCopas())
+	}
+	
 }
